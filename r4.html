@@ -10,7 +10,7 @@
 <div id="content" hidden>
 <section id="dash" class="section active"><div class="grid" id="kpis"></div><div class="split"><article class="card"><div class="head"><h2>TOP по БМ</h2><span class="muted">текущие данные</span></div><div id="topbm"></div></article><article class="card"><div class="head"><h2>Требуют внимания</h2><span class="muted">R4</span></div><div id="attention"></div></article></div></section>
 <section id="players" class="section"><article class="card"><div class="head"><h2>Все игроки</h2><div class="tools"><input id="search" placeholder="Поиск по нику"><select id="playerSort"><option value="bm">БМ ↓</option><option value="squads">БМ отрядов ↓</option><option value="sanctuary">Святилище ↓</option><option value="soldier">Уровень солдат ↓</option><option value="events">Участие ↓</option></select></div></div><div class="tablewrap" id="playersTable"></div></article></section>
-<section id="duel" class="section"><article class="card"><div class="head"><div><h2>Очки Дуэли за неделю</h2><div class="muted">от большего результата к меньшему</div></div><input id="duelSearch" placeholder="Поиск игрока"></div><div class="tablewrap" id="duelTable"></div></article></section>
+<section id="duel" class="section"><article class="card" style="border-color:rgba(239,129,122,.55)"><div class="head"><div><h2>🔴 Критический недобор по Дуэли</h2><div class="muted">только статус «🔴 Сильно ниже обычного» · «Нет данных» не учитывается</div></div><span class="pill bad" id="criticalDuelCount"></span></div><div class="tablewrap" id="criticalDuelTable"></div></article><article class="card"><div class="head"><div><h2>Очки Дуэли за неделю</h2><div class="muted">от большего результата к меньшему</div></div><input id="duelSearch" placeholder="Поиск игрока"></div><div class="tablewrap" id="duelTable"></div></article></section>
 <section id="caravan" class="section">
 <article class="card"><div class="head"><div><h2>Караван · динамика недели</h2><div class="muted">1 — пассажир · К — кучер · красным отмечен день нарушения ротации</div></div><span class="pill" id="violCount"></span></div>
 <div class="tablewrap" id="caravanWeek"></div></article>
@@ -40,11 +40,25 @@ let total=R.reduce((s,r)=>s+(r.bm||0),0),v=R.filter(r=>r.caravanViolation).lengt
 kpis.innerHTML=[['Игроков',R.length],['БМ альянса',fmt(total)],['Участие',pct(avg)],['Нарушители Каравана',v],['Дуэль: нет данных',missing],['Участники события',ev]].map(x=>'<div class="kpi"><div class="l">'+x[0]+'</div><div class="n">'+x[1]+'</div></div>').join('');
 topbm.innerHTML=small([...R].sort((a,b)=>b.bm-a.bm).slice(0,10),r=>fmt(r.bm));
 attention.innerHTML=[...R].sort((a,b)=>(a.events-b.events)||((a.groupRatio||0)-(b.groupRatio||0))).slice(0,10).map(r=>'<div style="padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)"><b>'+esc(r.nick)+'</b><div class="muted">Участие '+pct(r.events)+' · Дуэль '+esc(r.duelRating)+'</div></div>').join('');
-renderPlayers();renderDuel();renderCaravan();renderEvents();renderGrowth();renderWhy();renderRoster();renderArchive();
+renderPlayers();renderCriticalDuel();renderDuel();renderCaravan();renderEvents();renderGrowth();renderWhy();renderRoster();renderArchive();
 search.oninput=renderPlayers;playerSort.onchange=renderPlayers;duelSearch.oninput=renderDuel;growthSort.onchange=renderGrowth;whyPlayer.onchange=drawWhy;addPlayerBtn.onclick=addPlayer;
 files.onchange=()=>fileList.innerHTML=[...files.files].map(f=>'<span class="pill" style="margin:3px">'+esc(f.name)+'</span>').join('')+'<div class="warn" style="margin-top:10px">DEMO: реальное распознавание подключим к серверному Vision API.</div>';
 loading.hidden=true;content.hidden=false}
 function renderPlayers(){let q=search.value.toLowerCase(),key=playerSort.value,a=R.filter(r=>r.nick.toLowerCase().includes(q)),get={bm:r=>r.bm,squads:r=>r.currentSquadTotal,sanctuary:r=>r.sanctuary,soldier:r=>r.soldierLevel,events:r=>r.events}[key];a.sort((x,y)=>(get(y)||0)-(get(x)||0));playersTable.innerHTML=table(['#','Игрок','БМ','БМ отрядов','Сильнейший','Святилище','Солдаты','Участие'],a.map((r,i)=>'<tr><td class="rank">'+(i+1)+'</td><td><b>'+esc(r.nick)+'</b></td><td>'+fmt(r.bm)+'</td><td>'+fmt(r.currentSquadTotal)+'</td><td>'+fmt(r.currentStrongestSquad)+'</td><td>'+fmt(r.sanctuary)+'</td><td>'+fmt(r.soldierLevel)+'</td><td>'+pct(r.events)+'</td></tr>'))}
+function renderCriticalDuel(){
+  const critical=R
+    .filter(r=>r.duelRating==='🔴 Сильно ниже обычного'&&r.duel!=null&&r.typical!=null&&r.groupRatio!=null)
+    .sort((a,b)=>(a.groupRatio-b.groupRatio)||((b.typical-b.duel)-(a.typical-a.duel)));
+  criticalDuelCount.textContent=critical.length+' чел.';
+  if(!critical.length){
+    criticalDuelTable.innerHTML='<div class="muted" style="padding:12px">Сейчас игроков в критической зоне нет.</div>';
+    return;
+  }
+  criticalDuelTable.innerHTML=table(
+    ['#','Игрок','Очки Дуэли','Обычный результат','% от обычного','Недобор'],
+    critical.map((r,i)=>'<tr><td class="rank">'+(i+1)+'</td><td><b class="bad">'+esc(r.nick)+'</b></td><td>'+fmt(r.duel)+'</td><td>'+fmt(r.typical)+'</td><td class="bad">'+pct(r.groupRatio)+'</td><td class="bad">'+fmt(Math.max(0,r.typical-r.duel))+'</td></tr>')
+  );
+}
 function renderDuel(){let q=duelSearch.value.toLowerCase(),a=R.filter(r=>r.nick.toLowerCase().includes(q)).sort((a,b)=>(b.duel||-1)-(a.duel||-1));duelTable.innerHTML=table(['#','Игрок','Очки','Обычный результат группы','К группе','Оценка','Рост'],a.map((r,i)=>'<tr><td class="rank">'+(i+1)+'</td><td><b>'+esc(r.nick)+'</b></td><td>'+fmt(r.duel)+'</td><td>'+fmt(r.typical)+'</td><td>'+pct(r.groupRatio)+'</td><td class="'+((r.groupRatio||0)<.75?'bad':(r.groupRatio||0)<1.2?'warn':'good')+'">'+esc(r.duelRating)+'</td><td class="'+((r.duelGrowthPct||0)<0?'bad':'good')+'">'+pct(r.duelGrowthPct)+'</td></tr>'))}
 function caravanMarks(r,i){let a=['','','','','','',''];let n=Math.min(5,r.trips||0);for(let k=0;k<n;k++)a[(i*3+k*2)%7]='1';if(i%11===0)a[2]='К';if(r.caravanViolation){a[0]='1';a[1]='1'}return a}
 function renderCaravan(){let v=R.filter(r=>r.caravanViolation);violCount.textContent=v.length+' с нарушением';let rows=R.map((r,i)=>{let a=caravanMarks(r,i);return '<tr><td><b>'+esc(r.nick)+'</b></td>'+a.map((x,d)=>{let bad=d>0&&a[d-1]=='1'&&(x=='1'||x=='З');return '<td><span class="day '+(x=='К'?'coach ':'')+(bad?'violation':'')+'">'+(x||'·')+'</span></td>'}).join('')+'<td>'+fmt(r.trips)+'</td><td class="'+(r.caravanViolation?'bad':'good')+'">'+(r.caravanViolation?'ДА':'—')+'</td></tr>'});caravanWeek.innerHTML=table(['Игрок',...DAYS,'Поездок','Нарушение'],rows);
