@@ -1,18 +1,30 @@
 {
-  "name": "OLYMPUS Player Dashboard",
-  "short_name": "OLYMPUS",
-  "description": "OLYMPUS alliance player dashboard",
+  "id": "./app.html",
+  "name": "OLYMPUS Игрок",
+  "short_name": "OLYMPUS Игрок",
   "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#08101d",
-  "theme_color": "#0b1120",
+  "background_color": "#101827",
+  "theme_color": "#101827",
   "icons": [
     {
-      "src": "./olympus-app-icon.png",
+      "src": "./icons/player-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/player-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/player-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

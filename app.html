@@ -6,10 +6,10 @@
   <meta name="theme-color" content="#0b1120">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="OLYMPUS">
-  <title>OLYMPUS</title>
-  <link rel="icon" type="image/png" href="./olympus-app-icon.png">
-  <link rel="apple-touch-icon" href="./olympus-app-icon.png">
+  <meta name="apple-mobile-web-app-title" content="OLYMPUS Игрок">
+  <title>OLYMPUS · Игрок</title>
+  <link rel="icon" type="image/png" href="./icons/player-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/player-180.png">
   <link rel="manifest" href="./app.webmanifest">
   <style>
     :root{color-scheme:dark;--bg:#08101d;--gold:#d8ad4a;--text:#eef4ff;--muted:#91a0b8}
@@ -34,12 +34,12 @@
   </style>
 </head>
 <body>
-  <iframe id="frame" allow="clipboard-read; clipboard-write"></iframe>
+  <iframe title="Личный кабинет игрока OLYMPUS" id="frame" allow="clipboard-read; clipboard-write"></iframe>
   <a id="openExternal" class="open" href="#" target="_blank" rel="noopener">Открыть напрямую</a>
 
   <div id="splash" class="splash">
     <div class="brand">
-      <img class="logo" src="./olympus-app-icon.png" alt="OLYMPUS">
+      <img class="logo" src="./icons/player-192.png" alt="OLYMPUS">
       <div class="name">OLYMPUS</div>
       <div class="sub">Player Dashboard</div>
     </div>
@@ -62,7 +62,7 @@
   var incoming=(q.get('target')||'').trim();
   var saved='';
   try{saved=localStorage.getItem(KEY)||'';}catch(e){}
-  var target=incoming||saved;
+  var target=incoming||saved||"https://script.google.com/macros/s/AKfycbz46C-J-xtPOloxQXgAdk8M1_i-Pj-i0ot9DwV14k1oDf5ZmusAu0w3BWPadG0NMi0n/exec";
 
   function valid(u){
     return /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:[?#].*)?$/i.test(String(u||'').trim());
