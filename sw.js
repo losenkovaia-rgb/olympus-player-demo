@@ -1,4 +1,4 @@
-const CACHE='olympus-shell-v2';
+const CACHE='olympus-shell-v14';
 const ASSETS=['./app.html','./r4-app.html','./app.webmanifest','./r4-app.webmanifest','./icons/player-192.png','./icons/r4-192.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('olympus-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

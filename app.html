@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="OLYMPUS Игрок">
   <title>OLYMPUS · Игрок</title>
-  <link rel="icon" type="image/png" href="./icons/player-192.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="./icons/player-180.png">
+  <link rel="icon" type="image/png" href="./icons/player-192.png?v=14">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/player-180.png?v=14">
   <link rel="manifest" href="./app.webmanifest">
   <style>
     :root{color-scheme:dark;--bg:#08101d;--gold:#d8ad4a;--text:#eef4ff;--muted:#91a0b8}
@@ -31,15 +31,15 @@
     .card button{width:100%;margin-top:12px;border:0;border-radius:12px;background:#d8ad4a;color:#101827;font-weight:800;padding:13px 14px;font-size:16px}
     .err{display:none;margin-top:10px;color:#ff9e98;font-size:13px}
     .open{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:4;border:1px solid rgba(216,173,74,.45);background:rgba(8,16,29,.82);color:#f3d889;border-radius:999px;padding:9px 12px;font-size:12px;text-decoration:none;backdrop-filter:blur(10px)}
-  </style>
+  .install-guide{position:fixed;inset:0;z-index:20;overflow:auto;background:#101827;color:#effaf6;padding:28px 22px;font:17px/1.6 system-ui}.install-guide[hidden]{display:none}.install-guide main{max-width:480px;margin:auto}.install-guide img{width:144px;height:144px;display:block;margin:0 auto}.install-guide h1{text-align:center}.install-guide button{padding:16px;width:100%;border:0;border-radius:14px;background:#36c799;color:#081d18;font:700 17px system-ui}.install-guide small{color:#b5ccca}</style>
 </head>
-<body>
+<body><section id="installGuide" class="install-guide" hidden><main><img src="./icons/player-180.png?v=14" alt="Зелёный значок PLAYER"><h1>OLYMPUS · Игрок</h1><p>Чтобы на экране iPhone появился <b>зелёный значок PLAYER</b>:</p><ol><li>Откройте эту страницу в Safari.</li><li>Нажмите «Поделиться» → «На экран Домой» → «Добавить».</li></ol><p>Если раньше был серый ярлык с буквой O, удалите его и добавьте новый с этой страницы. Данные игрока сохранятся.</p><button id="continuePlayer" type="button">Открыть кабинет игрока</button><p><small>На Android: меню Chrome → «Установить приложение» или «Добавить на главный экран».</small></p></main></section>
   <iframe title="Личный кабинет игрока OLYMPUS" id="frame" allow="clipboard-read; clipboard-write"></iframe>
   <a id="openExternal" class="open" href="#" target="_blank" rel="noopener">Открыть напрямую</a>
 
   <div id="splash" class="splash">
     <div class="brand">
-      <img class="logo" src="./icons/player-192.png" alt="OLYMPUS">
+      <img class="logo" src="./icons/player-192.png?v=14" alt="OLYMPUS">
       <div class="name">OLYMPUS</div>
       <div class="sub">Player Dashboard</div>
     </div>
@@ -76,7 +76,9 @@
     setTimeout(function(){document.getElementById('splash').classList.add('hide');},500);
     return true;
   }
-  if(!launch(target)){
+  var installing=q.get('install')==='1'&&!navigator.standalone&&!matchMedia('(display-mode: standalone)').matches;
+  if(installing){document.getElementById('installGuide').hidden=false;document.getElementById('splash').classList.add('hide');document.getElementById('continuePlayer').onclick=function(){this.closest('section').hidden=true;launch(target);};}
+  else if(!launch(target)){
     document.getElementById('splash').classList.add('hide');
     document.getElementById('setup').classList.add('show');
   }
