@@ -1,0 +1,24 @@
+{
+  "id": "/olympus-player-demo/player/",
+  "name": "OLYMPUS Игрок",
+  "short_name": "OLY Игрок",
+  "start_url": "/olympus-player-demo/player/",
+  "scope": "/olympus-player-demo/player/",
+  "display": "standalone",
+  "background_color": "#101827",
+  "theme_color": "#101827",
+  "icons": [
+    {
+      "src": "../icons/player-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/player-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

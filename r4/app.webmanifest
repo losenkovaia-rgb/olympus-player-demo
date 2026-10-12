@@ -1,0 +1,24 @@
+{
+  "id": "/olympus-player-demo/r4/",
+  "name": "OLYMPUS R4",
+  "short_name": "OLY R4",
+  "start_url": "/olympus-player-demo/r4/",
+  "scope": "/olympus-player-demo/r4/",
+  "display": "standalone",
+  "background_color": "#101827",
+  "theme_color": "#101827",
+  "icons": [
+    {
+      "src": "../icons/r4-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "../icons/r4-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
